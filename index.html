@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jig Maintenance</title>
+
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background: #f4f6f8;
+  margin: 0;
+}
+
+.container {
+  max-width: 500px;
+  margin: auto;
+  padding: 16px;
+}
+
+.card {
+  background: white;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 12px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+img {
+  width: 100%;
+  border-radius: 8px;
+  margin-top: 10px;
+}
+
+.status {
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-weight: bold;
+}
+
+.ok { background: #d4edda; color: #155724; }
+.warning { background: #fff3cd; color: #856404; }
+.overdue { background: #f8d7da; color: #721c24; }
+
+ul {
+  padding-left: 18px;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 14px;
+}
+
+th, td {
+  padding: 6px;
+  text-align: left;
+}
+
+th {
+  background: #eee;
+}
+</style>
+
+</head>
+<body>
+
+<div class="container">
+
+  <!-- TITLE -->
+  <div class="card">
+    <h2>JIG 5 I7500</h2>
+  </div>
+
+  <!-- IMAGE -->
+  <div class="card">
+    <h3>Jig Image</h3>
+    <img src="JIG7500.png" alt="Jig Image">
+  </div>
+
+  <!-- PREVENTIVE -->
+  <div class="card">
+    <h3>Preventive Maintenance</h3>
+    <p>Last PM: <b id="lastPM"></b></p>
+    <p>Next PM: <b id="nextPM"></b></p>
+    <p>Status: <span id="status" class="status"></span></p>
+  </div>
+
+  <!-- SPEC -->
+  <div class="card">
+    <h3>Specification</h3>
+
+    <p><b>PIN:</b></p>
+    <ul>
+      <li>PIN-01</li>
+      <li>PIN-02</li>
+      <li>PIN-03</li>
+    </ul>
+
+    <p><b>Sensor:</b></p>
+    <ul>
+      <li>KEYENCE PZ-G41</li>
+      <li>OMRON E2E</li>
+    </ul>
+
+    <p><b>Solenoid:</b></p>
+    <ul>
+      <li>SMC SY3120</li>
+    </ul>
+
+    <p><b>Clamp / Compact:</b></p>
+    <ul>
+      <li>Clamp A</li>
+      <li>Clamp B</li>
+    </ul>
+  </div>
+
+  <!-- HISTORY -->
+  <div class="card">
+    <h3>History Problem</h3>
+    <table border="1">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Problem</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody id="historyTable"></tbody>
+    </table>
+  </div>
+
+</div>
+
+<script>
+// =======================
+// PREVENTIVE DATA
+// =======================
+const lastPM = "2026-05-01";
+const nextPM = "2026-06-01";
+
+document.getElementById("lastPM").innerText = lastPM;
+document.getElementById("nextPM").innerText = nextPM;
+
+// =======================
+// AUTO STATUS
+// =======================
+const today = new Date();
+const next = new Date(nextPM);
+const statusEl = document.getElementById("status");
+
+if (today > next) {
+  statusEl.innerText = "OVERDUE";
+  statusEl.classList.add("overdue");
+} else {
+  const diff = (next - today) / (1000 * 60 * 60 * 24);
+
+  if (diff < 7) {
+    statusEl.innerText = "WARNING";
+    statusEl.classList.add("warning");
+  } else {
+    statusEl.innerText = "OK";
+    statusEl.classList.add("ok");
+  }
+}
+
+// =======================
+// HISTORY DATA
+// =======================
+const history = [
+  {
+    date: "2026-04-20",
+    problem: "Clamp tidak locking",
+    action: "Ganti solenoid"
+  },
+  {
+    date: "2026-04-10",
+    problem: "Sensor tidak detect",
+    action: "Adjust posisi sensor"
+  },
+  {
+    date: "2026-03-25",
+    problem: "PIN aus",
+    action: "Replace PIN-02"
+  }
+];
+
+// =======================
+// RENDER HISTORY
+// =======================
+const table = document.getElementById("historyTable");
+
+history.forEach(item => {
+  const row = `
+    <tr>
+      <td>${item.date}</td>
+      <td>${item.problem}</td>
+      <td>${item.action}</td>
+    </tr>
+  `;
+  table.innerHTML += row;
+});
+
+</script>
+
+</body>
+</html>
